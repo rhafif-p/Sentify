@@ -31,3 +31,9 @@ Memanfaatkan fitur face detection dan analisis sentimen berdasarkan kuis singkat
 ![Competito1](assets\comp1.jpg)
 ![Competito2](assets\comp2.jpg)
 ![Competito3](assets\comp3.jpg)
+
+## Use Case Diagram
+![use](assets\use-sentify.png)
+## Entity Relationship Diagram
+![erd](assets\erd-sentify.png)
+
