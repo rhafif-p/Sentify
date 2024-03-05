@@ -1,5 +1,5 @@
 # Sentify
-Web based application bertujuan untuk mendeteksi emosi dari tweets pada paltform X
+Web based application bertujuan untuk memberikan rekomendasi judul buku dari emosi pengguna.
 
 Kelompok Keren 
 Ketua Kelompok: Rhafif Prasetyo -21/477018/TK/52532
