@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -21,10 +22,18 @@ export default function Home() {
         <div className="flex flex-row justify-evenly text-center pt-40">
           <div className="flex flex-col w-1/6 ">
             <button className="text-lg font-bold bg-limegreen text-white flex items-center justify-center p-4 rounded-lg">
-              <img src="/static/face.png" alt="Icon" className="w-6 h-6 mr-2" />
-              Face Recognition
+              <Link href="/home/addImage">
+                <div className="flex flex-row item">
+                  <img
+                    src="/static/face.png"
+                    alt="Icon"
+                    className="w-8 h-8 mr-2"
+                  />
+                  Face Recognition
+                </div>
+              </Link>
             </button>
-            <p className="text-sm font-semibold text-lightgray pt-12">
+            <p className="text-sm font-semibold text-lightgray pt-8">
               Anda dapat mengunggah foto terkini dari diri anda melalui kamera
               atau melalui foto yang sudah ada yang memungkinkan kami untuk
               membaca emosi anda dari foto tersebut.
@@ -33,14 +42,18 @@ export default function Home() {
 
           <div className="flex flex-col w-1/6">
             <button className="text-lg font-bold bg-limegreen text-white flex items-center justify-center p-4 rounded-lg">
-              <img
-                src="/static/camera.png"
-                alt="Icon"
-                className="w-6 h-6 mr-2"
-              />
-              Answer Question
+              <Link href="/home/questionMark">
+                <div className="flex flex-row items-center">
+                  <img
+                    src="/static/camera.png"
+                    alt="Icon"
+                    className="w-8 h-9 mr-2"
+                  />
+                  Answer Question
+                </div>
+              </Link>
             </button>
-            <p className="text-sm font-semibold text-lightgray pt-12">
+            <p className="text-sm font-semibold text-lightgray pt-8">
               Anda dapat mengunggah foto terkini dari diri anda melalui kamera
               atau melalui foto yang sudah ada yang memungkinkan kami untuk
               membaca emosi anda dari foto tersebut.
