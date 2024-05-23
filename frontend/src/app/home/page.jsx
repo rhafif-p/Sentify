@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="flex h-screen flex-col items-center justify-between p-10 bg-green">
       <div
-        className="bg-white h-screen flex flex-col items-center rounded-xl m-8"
+        className="bg-white h-screen w-full flex flex-col items-center rounded-xl mx-8"
         style={{ boxShadow: '7px 8px 17px 0px #00000040' }}
       >
         <p className="font-bold text-6xl text-darkgray font-poppins text-center w-2/5 pt-10 pb-16 leading-tight mt-8">
