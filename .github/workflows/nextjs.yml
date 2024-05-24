@@ -73,7 +73,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: nextjs-build
+          name: github-pages
           path: frontend/out
 
 
@@ -89,5 +89,5 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          artifact-name: nextjs-build  # Specify the correct artifact name here
+          artifact_name: github-pages
 
