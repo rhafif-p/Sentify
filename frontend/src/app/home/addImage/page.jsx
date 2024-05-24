@@ -1,10 +1,16 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useRouter } from 'next/navigation'
+import axios from 'axios'
 
 export default function AddImage() {
+  const [base64Image, setBase64Image] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const [mood, setMood] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const fileInputRef = useRef(null)
 
@@ -14,29 +20,97 @@ export default function AddImage() {
     }
   }
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0]
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      const base64String = reader.result
+        .replace('data:image/jpeg;base64,', '')
+        .replace('data:image/png;base64,', '')
+      setBase64Image(base64String)
+      setSelectedImage(reader.result)
+    }
+
     if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setSelectedImage(reader.result)
-        toast.success('Image uploaded successfully!')
-      }
       reader.readAsDataURL(file)
     }
   }
 
   const handleCancel = () => {
     setSelectedImage(null)
+    setBase64Image('')
     if (fileInputRef.current) {
       fileInputRef.current.value = null // Clear the file input
     }
   }
 
   const handleSubmit = () => {
-    // Handle the submit action here
-    toast.success('Image submitted successfully!')
+    if (selectedImage) {
+      getMood()
+    } else {
+      console.log('No photo uploaded')
+      toast.error('Please upload an image first')
+    }
   }
+
+  const getMood = async () => {
+    setLoading(true)
+    console.log('Sending base64Image:', base64Image)
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: 'https://detect.roboflow.com/senpro-emotion-detection/1',
+        params: {
+          api_key: 'vqxgZpwsPMqdRWrLT92J',
+        },
+        data: base64Image,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+
+      console.log(response.data)
+      let tempMood = response.data.top
+      if (tempMood === 'angry') {
+        tempMood = 'marah'
+        console.log('Changed to ', tempMood)
+      } else if (tempMood === 'disgusted') {
+        tempMood = 'jijik'
+        console.log('Changed to ', tempMood)
+      } else if (tempMood === 'fearful') {
+        tempMood = 'takut'
+        console.log('Changed to ', tempMood)
+      } else if (tempMood === 'happy') {
+        tempMood = 'senang'
+        console.log('Changed to ', tempMood)
+      } else if (tempMood === 'neutral') {
+        tempMood = 'netral'
+        console.log('Changed to ', tempMood)
+      } else if (tempMood === 'sad') {
+        tempMood = 'sedih'
+        console.log('Changed to ', tempMood)
+      } else if (tempMood === 'surprised') {
+        tempMood = 'terkejut'
+        console.log('Changed to ', tempMood)
+      }
+      localStorage.setItem('myMood', JSON.stringify(tempMood))
+      setMood(tempMood)
+      setLoading(false)
+      console.log('moodnya dapet')
+      router.push('/home/results')
+    } catch (error) {
+      console.log(error.message)
+      toast.error('Error uploading image: ' + error.message)
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (base64Image) {
+      getMood()
+    }
+  }, [base64Image])
 
   return (
     <main className="flex h-screen flex-col items-center justify-between p-10 bg-green">
@@ -60,11 +134,15 @@ export default function AddImage() {
               onClick={handleClickButton}
               style={{ cursor: 'pointer' }}
             >
-              <img
-                src={selectedImage || '/static/unggah.png'}
-                alt="Icon"
-                className="w-8 h-8"
-              />
+              {selectedImage ? (
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  className="w-28 h-24 object-cover"
+                />
+              ) : (
+                <img src="/static/unggah.png" alt="Icon" className="w-8 h-8" />
+              )}
             </div>
             <p className="text-md font-bold text-lightgray pt-2">Unggah Foto</p>
           </div>
@@ -81,8 +159,9 @@ export default function AddImage() {
             <button
               className="bg-limegreen text-white px-4 py-2 rounded"
               onClick={handleSubmit}
+              disabled={loading} // Disable the button while loading
             >
-              Submit
+              {loading ? 'Loading...' : 'Submit'}
             </button>
           </div>
         )}
@@ -91,7 +170,7 @@ export default function AddImage() {
         type="file"
         ref={fileInputRef}
         style={{ display: 'none' }}
-        onChange={handleFileChange}
+        onChange={handleImageUpload}
       />
       <ToastContainer />
     </main>
