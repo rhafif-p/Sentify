@@ -88,3 +88,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact-name: nextjs-build  # Specify the correct artifact name here
+
