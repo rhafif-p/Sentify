@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write 'src/**/*.jsx'"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "classnames": "^2.5.1",
