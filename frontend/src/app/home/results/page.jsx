@@ -1,72 +1,51 @@
 'use client'
-import React, { useState } from 'react'
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function Result() {
-  const [selectedItem, setSelectedItem] = useState(null)
+  const [books, setBooks] = useState([]); 
+  const [selectedBook, setSelectedBook] = useState(null); 
+  const [bookDescription, setBookDescription] = useState(''); 
 
-  const items = [
-    {
-      id: 1,
-      name: 'Judul 1',
-      description: 'Description for Judul 1',
-      content: 'Content for Judul 1',
-    },
-    {
-      id: 2,
-      name: 'Judul 2',
-      description: 'Description for Judul 2',
-      content: 'Content for Judul 2',
-    },
-    {
-      id: 3,
-      name: 'Judul 3',
-      description: 'Description for Judul 3',
-      content: 'Content for Judul 3',
-    },
-    {
-      id: 4,
-      name: 'Judul 4',
-      description: 'Description for Judul 4',
-      content: 'Content for Judul 4',
-    },
-    {
-      id: 5,
-      name: 'Judul 5',
-      description: 'Description for Judul 5',
-      content: 'Content for Judul 5',
-    },
-    {
-      id: 6,
-      name: 'Judul 6',
-      description: 'Description for Judul 6',
-      content: 'Content for Judul 6',
-    },
-    {
-      id: 7,
-      name: 'Judul 7',
-      description: 'Description for Judul 7',
-      content: 'Content for Judul 7',
-    },
-    {
-      id: 8,
-      name: 'Judul 8',
-      description: 'Description for Judul 8',
-      content: 'Content for Judul 8',
-    },
-    {
-      id: 9,
-      name: 'Judul 9',
-      description: 'Description for Judul 9',
-      content: 'Content for Judul 9',
-    },
-  ]
+  const genres = ['arts', 'architecture', 'art instruction', 'art history', 'dance','graphic novels', 'design', 'fashion', 'film', 'graphic design', 'music', 'music theory', 'painting', 'photography', 'animals', 'bears', 'cats', 'kittens', 'dogs', 'puppies', 'fiction', 'fantasy', 'historical fiction', 'horror', 'humor', 'literature', 'magic', 'mystery and detective stories', 'plays', 'poetry', 'romance', 'science fiction', 'short stories', 'thriller', 'young adult', 'science & mathematics', 'biology', 'chemistry', 'mathematics', 'physics', 'programming', 'business & finance', 'management', 'drama', 'satire', 'business success', 'finance', 'children\'s', 'kids books', 'stories in rhyme', 'baby books', 'bedtime books', 'picture books', 'history', 'ancient civilization', 'archaeology', 'anthropology', 'world war ii', 'social life and customs', 'health & wellness', 'cooking', 'cookbooks', 'mental health', 'exercise', 'nutrition', 'self-help', 'biography', 'autobiographies', 'history', 'politics and government', 'world war ii', 'women', 'kings and rulers','comedy','novel','children']; // List of genres
+
+  useEffect(() => {
+    const fetchData = async (subject) => {
+      try {
+        const apiUrl = `https://openlibrary.org/search.json?subject=${subject}&has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median`;
+        const response = await axios.get(apiUrl);
+        const sortedBooks = response.data.docs.sort((a, b) => b.ratings_sortable - a.ratings_sortable);
+        console.log(sortedBooks);
+        setBooks(sortedBooks.slice(0, 10)); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData('comedy');
+  }, []);
+
+  useEffect(() => {
+    const fetchBookDescription = async () => {
+      if (selectedBook) {
+        try {
+          const isbn = selectedBook.isbn[0];
+          const response = await axios.get(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=details&format=json`);
+          const bookDetails = response.data[`ISBN:${isbn}`].details;
+          setBookDescription(bookDetails.description ? bookDetails.description.value : 'No description available');
+        } catch (error) {
+          console.error('Error fetching book description:', error);
+        }
+      }
+    };
+
+    fetchBookDescription(); 
+  }, [selectedBook]); 
 
   return (
     <main className="h-auto flex flex-col items-center justify-between p-10 bg-green">
-      <div
-        className="bg-white h-sdvh w-full flex flex-col items-center rounded-xl mx-8"
-        style={{ boxShadow: '7px 8px 17px 0px #00000040' }}
-      >
+      <div className="bg-white h-sdvh w-full flex flex-col items-center rounded-xl mx-8" style={{ boxShadow: '7px 8px 17px 0px #00000040' }}>
         <p className="font-bold text-6xl text-darkgray font-poppins text-center w-3/6 pt-10 pb-16 leading-tight mt-8">
           BERIKUT INI JUDUL BUKU REKOMENDASI KAMI
         </p>
@@ -76,35 +55,48 @@ export default function Result() {
         </p>
 
         <div className="flex h-full w-3/4 columns-2 py-10 gap-10">
-          <div className="flex-1 overflow-y-auto overflow-hidden">
+          <div className="flex-1">
             {/* Scrollable column */}
-
-            {/* Header description if its needed */}
-            {/* <div className="pb-10 border-b border-gray-400">
-              <p className="text-lg font-bold text-darkgray">Judul Buku</p>
-              <p className="text-gray-600">Deskripsi</p>
-            </div> */}
-            {items.map((item) => (
+            {books.map((book) => (
               <div
-                key={item.id}
-                className={`p-4 h-32 border border-gray-200 rounded-xl mb-4 ${selectedItem === item.id ? 'bg-gray-100' : ''}`}
-                onClick={() => setSelectedItem(item.id)}
+                key={book.title}
+                className={`p-4 h-auto border border-gray-200 rounded-xl mb-4 flex flex-row gap-4 ${selectedBook === book ? 'bg-gray-100' : ''}`}
+                onClick={() => setSelectedBook(book)}
               >
-                <p className="text-xl font-bold text-darkgray">{item.name}</p>
-                <p className="text-gray-600">{item.description}</p>
+                <div>
+                  <img src={`https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`} alt={book.title} className='w-24 rounded-lg'/>
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-darkgray">{book.title}</p>
+                  <p className="text-gray-600">{book.author_name.join(', ')}</p>
+                </div>
               </div>
             ))}
           </div>
 
           <div className="flex-1">
             {/* Detailed content column */}
-            {selectedItem && (
-              <div className="p-4">
-                <p className="text-2xl font-bold text-darkgray">
-                  {items.find((i) => i.id === selectedItem).name}
+            {selectedBook && (
+              <div className="p-4 flex flex-col gap-4">
+                <p className="text-5xl font-bold text-darkgray">{selectedBook.title}</p>
+                <img src={`https://covers.openlibrary.org/b/id/${selectedBook.cover_i}-L.jpg`} className='rounded-lg w-1/2'/>
+                <p className="text-gray-600">
+                  <span className="font-bold">Deskripsi:</span> {bookDescription}
                 </p>
                 <p className="text-gray-600">
-                  {items.find((i) => i.id === selectedItem).content}
+                  <span className="font-bold">Penulis:</span> {selectedBook.author_name.join(', ')}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-bold">Tahun Publikasi Terakhir:</span> {Math.max(...selectedBook.publish_year)}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-bold">Jumlah Halaman:</span> {selectedBook.number_of_pages_median}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-bold">Genre:</span> {selectedBook.subject.filter(subject => genres.includes(subject.toLowerCase())).join(', ')}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-bold">Rating:</span> {selectedBook.ratings_average}
                 </p>
               </div>
             )}
@@ -112,5 +104,5 @@ export default function Result() {
         </div>
       </div>
     </main>
-  )
+  );
 }
