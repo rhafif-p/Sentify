@@ -7,11 +7,13 @@ export default function Result() {
   const [books, setBooks] = useState([]); 
   const [selectedBook, setSelectedBook] = useState(null); 
   const [bookDescription, setBookDescription] = useState(''); 
+  const [isLoading, setIsLoading] = useState(true); 
 
   const genres = ['arts', 'architecture', 'art instruction', 'art history', 'dance','graphic novels', 'design', 'fashion', 'film', 'graphic design', 'music', 'music theory', 'painting', 'photography', 'animals', 'bears', 'cats', 'kittens', 'dogs', 'puppies', 'fiction', 'fantasy', 'historical fiction', 'horror', 'humor', 'literature', 'magic', 'mystery and detective stories', 'plays', 'poetry', 'romance', 'science fiction', 'short stories', 'thriller', 'young adult', 'science & mathematics', 'biology', 'chemistry', 'mathematics', 'physics', 'programming', 'business & finance', 'management', 'drama', 'satire', 'business success', 'finance', 'children\'s', 'kids books', 'stories in rhyme', 'baby books', 'bedtime books', 'picture books', 'history', 'ancient civilization', 'archaeology', 'anthropology', 'world war ii', 'social life and customs', 'health & wellness', 'cooking', 'cookbooks', 'mental health', 'exercise', 'nutrition', 'self-help', 'biography', 'autobiographies', 'history', 'politics and government', 'world war ii', 'women', 'kings and rulers','comedy','novel','children']; // List of genres
 
   useEffect(() => {
     const fetchData = async (subject) => {
+      setIsLoading(true);
       try {
         const apiUrl = `https://openlibrary.org/search.json?subject=${subject}&has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median`;
         const response = await axios.get(apiUrl);
@@ -21,6 +23,7 @@ export default function Result() {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+      setIsLoading(false);
     };
   
     fetchData('comedy');
@@ -44,6 +47,26 @@ export default function Result() {
   }, [selectedBook]); 
 
   return (
+    <>
+    {isLoading ? (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+          <div className="text-center">
+            <div role="status">
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '78vh' }}>
+                <div style={{
+                  border: '16px solid #f3f3f3',
+                  borderTop: '16px solid #3498db',
+                  borderRadius: '50%',
+                  width: '120px',
+                  height: '120px',
+                  animation: 'spin 2s linear infinite'
+                }} />
+              </div>
+              <p className="text-blue">Loading... </p>
+            </div>
+          </div>
+        </div>
+      ) : (
     <main className="h-auto flex flex-col items-center justify-between p-10 bg-green">
       <div className="bg-white h-sdvh w-full flex flex-col items-center rounded-xl mx-8" style={{ boxShadow: '7px 8px 17px 0px #00000040' }}>
         <p className="font-bold text-6xl text-darkgray font-poppins text-center w-3/6 pt-10 pb-16 leading-tight mt-8">
@@ -104,5 +127,7 @@ export default function Result() {
         </div>
       </div>
     </main>
+    )}
+  </>
   );
 }
