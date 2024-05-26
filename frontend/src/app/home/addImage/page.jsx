@@ -61,7 +61,7 @@ export default function AddImage() {
     if (mood) {
       localStorage.setItem('myMood', JSON.stringify(mood))
       localStorage.setItem('predictedClasses', JSON.stringify(predictedClasses))
-      router.push('/results')
+      router.push('/home/results')
     } else {
       toast.error('Mood not predicted yet')
     }
@@ -84,34 +84,44 @@ export default function AddImage() {
       })
 
       console.log(response.data)
-      let tempMood = response.data.top
-      const tempPredictedClasses = response.data.predicted_classes
-      if (tempMood === 'angry') {
-        tempMood = 'marah'
-        console.log('Changed to ', tempMood)
-      } else if (tempMood === 'disgusted') {
-        tempMood = 'jijik'
-        console.log('Changed to ', tempMood)
-      } else if (tempMood === 'fearful') {
-        tempMood = 'takut'
-        console.log('Changed to ', tempMood)
-      } else if (tempMood === 'happy') {
-        tempMood = 'senang'
-        console.log('Changed to ', tempMood)
-      } else if (tempMood === 'neutral') {
-        tempMood = 'netral'
-        console.log('Changed to ', tempMood)
-      } else if (tempMood === 'sad') {
-        tempMood = 'sedih'
-        console.log('Changed to ', tempMood)
-      } else if (tempMood === 'surprised') {
-        tempMood = 'terkejut'
-        console.log('Changed to ', tempMood)
+      let tempMood = response.data.predicted_classes
+      if (tempMood.length > 0) {
+        const firstMood = tempMood[0]
+        let convertedMood
+
+        switch (firstMood) {
+          case 'angry':
+            convertedMood = 'marah'
+            break
+          case 'disgusted':
+            convertedMood = 'jijik'
+            break
+          case 'fearful':
+            convertedMood = 'takut'
+            break
+          case 'happy':
+            convertedMood = 'senang'
+            break
+          case 'neutral':
+            convertedMood = 'netral'
+            break
+          case 'sad':
+            convertedMood = 'sedih'
+            break
+          case 'surprised':
+            convertedMood = 'terkejut'
+            break
+          default:
+            convertedMood = 'netral'
+        }
+
+        console.log('Changed to', convertedMood)
+        setMood(convertedMood)
+        setPredictedClasses(tempMood)
+        setLoading(false)
+      } else {
+        console.log('Empty predicted mood array')
       }
-      setMood(tempMood)
-      setPredictedClasses(tempPredictedClasses)
-      setLoading(false)
-      console.log('Predicted Classnya:', tempPredictedClasses[0])
     } catch (error) {
       console.log(error.message)
       toast.error('Error uploading image: ' + error.message)
@@ -120,7 +130,7 @@ export default function AddImage() {
   }
 
   return (
-    <main className="flex h-screen flex-col items-center justify-between p-10 bg-green">
+    <main className="flex h-auto min-h-screen flex-col items-center justify-between p-10 bg-green">
       <div
         className="bg-white h-screen w-full flex flex-col items-center rounded-xl mx-8"
         style={{ boxShadow: '7px 8px 17px 0px #00000040' }}

@@ -89,8 +89,7 @@ export default function Result() {
     'comedy',
     'novel',
     'children',
-  ] // List of genres
-
+  ]
   useEffect(() => {
     const storedMood = localStorage.getItem('myMood')
 
@@ -153,7 +152,7 @@ export default function Result() {
           setBookDescription(
             bookDetails.description
               ? bookDetails.description.value
-              : 'No description available'
+              : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut eros in libero consequat ultrices. Aliquam erat volutpat. Mauris nec sapien nulla. Quisque auctor malesuada risus, vel tempus felis eleifend a. Nullam accumsan, eros vel cursus venenatis, leo odio rutrum felis, et volutpat tortor diam nec nibh. Vivamus vehicula, magna non feugiat tincidunt, risus ligula ullamcorper elit, eu efficitur est dui in velit. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi pretium mauris sed odio interdum ultrices. Sed sit amet felis sed ex sodales tempus. Vivamus vel eros in libero sollicitudin rhoncus sit amet vitae turpis. Proin sit amet sapien non .'
           )
 
           // Scroll back to the detailed content column
@@ -242,7 +241,7 @@ export default function Result() {
                         {book.title}
                       </p>
                       <p className="text-gray-600">
-                        {book.author_name.join(', ')}
+                        {book.author_name.slice(0, 3).join(', ')}
                       </p>
                     </div>
                   </div>

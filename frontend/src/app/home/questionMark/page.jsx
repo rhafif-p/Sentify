@@ -19,7 +19,7 @@ export default function QuestionMark() {
     if (mood) {
       localStorage.setItem('myMood', JSON.stringify(mood))
       console.log(mood)
-      // router.push('/home/results')
+      router.push('/home/results')
     } else {
       toast.error('Mood not predicted yet')
     }
