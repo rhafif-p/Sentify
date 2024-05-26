@@ -40,7 +40,9 @@ export default function Result() {
         };
   
         const selectedSubjects = moodSubjects[mood]; // Get subjects based on mood
-        const selectedSubject = selectedSubjects[Math.floor(Math.random() * selectedSubjects.length)]; // Randomly select one subject
+        const seed = new Date().getTime(); // Get current timestamp as seed
+        const random = Math.floor(Math.random() * seed);
+        const selectedSubject = selectedSubjects[random % selectedSubjects.length];
         console.log(selectedSubject)
   
         const apiUrl = `https://openlibrary.org/search.json?subject=${selectedSubject}&has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median`;
