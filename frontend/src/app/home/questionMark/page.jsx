@@ -3,12 +3,53 @@
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 
 
 export default function QuestionMark() {
-  const handleSubmit = () => {
-    // Handle submit logic here
+  const [text,setText]= useState("")
+  const [mood, setMood] = useState(null)
+  const router = useRouter()
+
+
+  const handleSubmit =  async () => {
+
+    await getMood()
     toast.success('Form submitted successfully!')
+  }
+  const handleViewResults = () => {
+    if (mood) {
+      localStorage.setItem('myMood', JSON.stringify(mood))
+      router.push('/home/results')
+    } else {
+      toast.error('Mood not predicted yet')
+    }
+  }
+
+  const getMood = async () => {
+    const reqbody = {
+      texts: [text]
+    }
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: 'http://127.0.0.1:8080/predict',
+        data: reqbody,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      const prediction = response.data.predictions[0];
+      setMood(prediction)
+      toast.success('Mood predicted successfully!')
+      console.log(mood)
+    } catch (error) {
+      console.log(error.message)
+      toast.error('Error predicting mood: ' + error.message)
+    }
   }
 
   return (
@@ -29,18 +70,31 @@ export default function QuestionMark() {
         <div className="pt-10 w-full flex flex-col">
           <div className="w-full h-full relative">
             <textarea
+              onChange={(e)=>{
+                setText(e.target.value);
+              }}
               placeholder="tulis aja ceritamu disini..."
               className="text-lightgray p-3 w-full min-h-[200px] border-4 border-limegreen rounded-lg focus:border-green resize-none"
             />
           </div>
         </div>
+        <div className='flex flex-row gap-10 absolute bottom-4 right-4'>
 
-        <button
-          className="bg-limegreen text-white px-4 py-2 rounded absolute bottom-4 right-4"
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+          <button
+            className="bg-limegreen text-white px-4 py-2 rounded"
+            onClick={handleSubmit}
+            >
+            Submit
+          </button>
+            {mood && (
+                  <button
+                    className="bg-limegreen text-white px-4 py-2 rounded"
+                    onClick={handleViewResults}
+                  >
+                    View Results
+                  </button>
+                )}
+        </div>
       </div>
       <ToastContainer />
     </main>
