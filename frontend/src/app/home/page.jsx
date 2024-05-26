@@ -71,9 +71,8 @@ export default function Home() {
               </Link>
             </button>
             <p className="text-sm font-semibold text-lightgray pt-8">
-              Anda dapat mengunggah foto terkini dari diri anda melalui kamera
-              atau melalui foto yang sudah ada yang memungkinkan kami untuk
-              membaca emosi anda dari foto tersebut.
+              Kami akan mencoba memahami anda sebaik mungkin dari jawaban yang
+              anda berikan, sehingga cobalah untuk jujur pada perasaan anda.
             </p>
           </div>
         </div>
