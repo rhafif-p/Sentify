@@ -37,14 +37,20 @@ export default function Result() {
           const response = await axios.get(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=details&format=json`);
           const bookDetails = response.data[`ISBN:${isbn}`].details;
           setBookDescription(bookDetails.description ? bookDetails.description.value : 'No description available');
+          
+          // Scroll back to the detailed content column
+          window.scrollTo({
+            top: document.getElementById('detailed-content').offsetTop,
+            behavior: 'smooth',
+          });
         } catch (error) {
           console.error('Error fetching book description:', error);
         }
       }
     };
-
-    fetchBookDescription(); 
-  }, [selectedBook]); 
+  
+    fetchBookDescription();
+  }, [selectedBook]);
 
   return (
     <>
@@ -63,7 +69,14 @@ export default function Result() {
                 }} />
               </div>
               <p className="text-blue">Loading... </p>
-            </div>
+            </div><style>
+                {`
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+                `}
+              </style>
           </div>
         </div>
       ) : (
@@ -97,12 +110,12 @@ export default function Result() {
             ))}
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1" id="detailed-content">
             {/* Detailed content column */}
             {selectedBook && (
               <div className="p-4 flex flex-col gap-4">
                 <p className="text-5xl font-bold text-darkgray">{selectedBook.title}</p>
-                <img src={`https://covers.openlibrary.org/b/id/${selectedBook.cover_i}-L.jpg`} className='rounded-lg w-1/2'/>
+                <img src={`https://covers.openlibrary.org/b/id/${selectedBook.cover_i}-L.jpg`} className='rounded-lg w-1/2 drop-shadow-md'/>
                 <p className="text-gray-600">
                   <span className="font-bold">Deskripsi:</span> {bookDescription}
                 </p>
