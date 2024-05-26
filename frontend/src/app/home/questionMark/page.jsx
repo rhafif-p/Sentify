@@ -22,7 +22,8 @@ export default function QuestionMark() {
   const handleViewResults = () => {
     if (mood) {
       localStorage.setItem('myMood', JSON.stringify(mood))
-      router.push('/home/results')
+      console.log(mood)
+      // router.push('/home/results')
     } else {
       toast.error('Mood not predicted yet')
     }
@@ -46,6 +47,17 @@ export default function QuestionMark() {
       setMood(prediction)
       toast.success('Mood predicted successfully!')
       console.log(mood)
+      if (prediction === 'joy') {
+        setMood('senang')
+      } else if (prediction === 'sadness') {
+        setMood('sedih')
+      } else if (prediction === 'anger') {
+        setMood('marah')
+      } else if (prediction === 'neutral') {
+        setMood('netral')
+      } else if (prediction === 'fear') {
+        setMood('takut')
+      }
     } catch (error) {
       console.log(error.message)
       toast.error('Error predicting mood: ' + error.message)

@@ -8,14 +8,42 @@ export default function Result() {
   const [selectedBook, setSelectedBook] = useState(null); 
   const [bookDescription, setBookDescription] = useState(''); 
   const [isLoading, setIsLoading] = useState(true); 
+  const [mood,setMood] = useState(null)
 
-  const genres = ['arts', 'architecture', 'art instruction', 'art history', 'dance','graphic novels', 'design', 'fashion', 'film', 'graphic design', 'music', 'music theory', 'painting', 'photography', 'animals', 'bears', 'cats', 'kittens', 'dogs', 'puppies', 'fiction', 'fantasy', 'historical fiction', 'horror', 'humor', 'literature', 'magic', 'mystery and detective stories', 'plays', 'poetry', 'romance', 'science fiction', 'short stories', 'thriller', 'young adult', 'science & mathematics', 'biology', 'chemistry', 'mathematics', 'physics', 'programming', 'business & finance', 'management', 'drama', 'satire', 'business success', 'finance', 'children\'s', 'kids books', 'stories in rhyme', 'baby books', 'bedtime books', 'picture books', 'history', 'ancient civilization', 'archaeology', 'anthropology', 'world war ii', 'social life and customs', 'health & wellness', 'cooking', 'cookbooks', 'mental health', 'exercise', 'nutrition', 'self-help', 'biography', 'autobiographies', 'history', 'politics and government', 'world war ii', 'women', 'kings and rulers','comedy','novel','children']; // List of genres
+  const genres = ['arts', 'architecture', 'art instruction', 'art history', 'dance','graphic novels','algebra','computerscience', 'design', 'fashion', 'film', 'graphic design', 'music', 'music theory', 'painting', 'photography', 'animals', 'bears', 'cats', 'kittens', 'dogs', 'puppies', 'fiction', 'fantasy', 'historical fiction', 'horror', 'humor', 'literature', 'magic', 'mystery and detective stories', 'plays', 'poetry', 'romance', 'science fiction', 'short stories', 'thriller', 'young adult', 'science & mathematics', 'biology', 'chemistry', 'mathematics', 'physics', 'programming', 'business & finance', 'management', 'drama', 'satire', 'business success', 'finance', 'children\'s', 'kids books', 'stories in rhyme', 'baby books', 'bedtime books', 'picture books', 'history', 'ancient civilization', 'archaeology', 'anthropology', 'world war ii', 'social life and customs', 'health & wellness', 'cooking', 'cookbooks', 'mental health', 'exercise', 'nutrition', 'self-help', 'biography', 'autobiographies', 'history', 'politics and government', 'world war ii', 'women', 'kings and rulers','comedy','novel','children']; // List of genres
 
   useEffect(() => {
-    const fetchData = async (subject) => {
+    const storedMood = localStorage.getItem('myMood');
+
+    const parsedMood = storedMood ? JSON.parse(storedMood) : null;
+
+    setMood(parsedMood);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!mood) {
+        return; // Return early if mood is not set
+      }
+  
       setIsLoading(true);
       try {
-        const apiUrl = `https://openlibrary.org/search.json?subject=${subject}&has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median`;
+        // Mapping of moods to subjects
+        const moodSubjects = {
+          'marah': ['algebra', 'architecture'],
+          'jijik': ['magic', 'programming', 'health'],
+          'takut': ['comedy', 'humor', 'education'],
+          'senang': ['film', 'humor'],
+          'netral': ['poetry', 'romance'],
+          'sedih': ['exercise', 'psychology'],
+          'terkejut': ['computerscience', 'history']
+        };
+  
+        const selectedSubjects = moodSubjects[mood]; // Get subjects based on mood
+        const selectedSubject = selectedSubjects[Math.floor(Math.random() * selectedSubjects.length)]; // Randomly select one subject
+        console.log(selectedSubject)
+  
+        const apiUrl = `https://openlibrary.org/search.json?subject=${selectedSubject}&has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median`;
         const response = await axios.get(apiUrl);
         const sortedBooks = response.data.docs.sort((a, b) => b.ratings_sortable - a.ratings_sortable);
         console.log(sortedBooks);
@@ -26,8 +54,9 @@ export default function Result() {
       setIsLoading(false);
     };
   
-    fetchData('comedy');
-  }, []);
+    fetchData();
+  }, [mood]); // Fetch data whenever mood changes
+  
 
   useEffect(() => {
     const fetchBookDescription = async () => {
@@ -48,7 +77,6 @@ export default function Result() {
         }
       }
     };
-  
     fetchBookDescription();
   }, [selectedBook]);
 
