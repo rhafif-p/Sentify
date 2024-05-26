@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useRouter } from 'next/navigation'
@@ -9,10 +9,11 @@ import axios from 'axios'
 export default function AddImage() {
   const [base64Image, setBase64Image] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const [mood, setMood] = useState(null)
+  const [predictedClasses, setPredictedClasses] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const fileInputRef = useRef(null)
+  const router = useRouter()
 
   const handleClickButton = () => {
     if (fileInputRef.current) {
@@ -40,17 +41,29 @@ export default function AddImage() {
   const handleCancel = () => {
     setSelectedImage(null)
     setBase64Image('')
+    setMood(null) // Reset mood when canceling
+    setPredictedClasses(null) // Reset predictedClasses when canceling
     if (fileInputRef.current) {
       fileInputRef.current.value = null // Clear the file input
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedImage) {
-      getMood()
+      await getMood()
     } else {
       console.log('No photo uploaded')
       toast.error('Please upload an image first')
+    }
+  }
+
+  const handleViewResults = () => {
+    if (mood) {
+      localStorage.setItem('myMood', JSON.stringify(mood))
+      localStorage.setItem('predictedClasses', JSON.stringify(predictedClasses))
+      router.push('/results')
+    } else {
+      toast.error('Mood not predicted yet')
     }
   }
 
@@ -72,6 +85,7 @@ export default function AddImage() {
 
       console.log(response.data)
       let tempMood = response.data.top
+      const tempPredictedClasses = response.data.predicted_classes
       if (tempMood === 'angry') {
         tempMood = 'marah'
         console.log('Changed to ', tempMood)
@@ -94,23 +108,16 @@ export default function AddImage() {
         tempMood = 'terkejut'
         console.log('Changed to ', tempMood)
       }
-      localStorage.setItem('myMood', JSON.stringify(tempMood))
       setMood(tempMood)
+      setPredictedClasses(tempPredictedClasses)
       setLoading(false)
-      console.log('moodnya dapet')
-      router.push('/home/results')
+      console.log('Predicted Classnya:', tempPredictedClasses[0])
     } catch (error) {
       console.log(error.message)
       toast.error('Error uploading image: ' + error.message)
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    if (base64Image) {
-      getMood()
-    }
-  }, [base64Image])
 
   return (
     <main className="flex h-screen flex-col items-center justify-between p-10 bg-green">
@@ -161,8 +168,16 @@ export default function AddImage() {
               onClick={handleSubmit}
               disabled={loading} // Disable the button while loading
             >
-              {loading ? 'Loading...' : 'Submit'}
+              {loading ? 'Loading...' : 'Predict Mood'}
             </button>
+            {mood && (
+              <button
+                className="bg-limegreen text-white px-4 py-2 rounded"
+                onClick={handleViewResults}
+              >
+                View Results
+              </button>
+            )}
           </div>
         )}
       </div>
