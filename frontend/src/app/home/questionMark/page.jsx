@@ -6,16 +6,12 @@ import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-
-
 export default function QuestionMark() {
-  const [text,setText]= useState("")
+  const [text, setText] = useState('')
   const [mood, setMood] = useState(null)
   const router = useRouter()
 
-
-  const handleSubmit =  async () => {
-
+  const handleSubmit = async () => {
     await getMood()
     toast.success('Form submitted successfully!')
   }
@@ -31,7 +27,7 @@ export default function QuestionMark() {
 
   const getMood = async () => {
     const reqbody = {
-      texts: [text]
+      texts: [text],
     }
 
     try {
@@ -41,9 +37,9 @@ export default function QuestionMark() {
         data: reqbody,
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       })
-      const prediction = response.data.predictions[0];
+      const prediction = response.data.predictions[0]
       setMood(prediction)
       toast.success('Mood predicted successfully!')
       console.log(mood)
@@ -65,8 +61,6 @@ export default function QuestionMark() {
   }
 
   return (
-
-    
     <main className="flex h-screen flex-col items-center justify-center p-10 bg-green">
       <div
         className="bg-white h-full w-full flex flex-col items-start rounded-xl p-20 relative"
@@ -82,30 +76,29 @@ export default function QuestionMark() {
         <div className="pt-10 w-full flex flex-col">
           <div className="w-full h-full relative">
             <textarea
-              onChange={(e)=>{
-                setText(e.target.value);
+              onChange={(e) => {
+                setText(e.target.value)
               }}
               placeholder="tulis aja ceritamu disini..."
               className="text-lightgray p-3 w-full min-h-[200px] border-4 border-limegreen rounded-lg focus:border-green resize-none"
             />
           </div>
         </div>
-        <div className='flex flex-row gap-10 absolute bottom-4 right-4'>
-
+        <div className="flex flex-row gap-10 absolute bottom-4 right-4">
           <button
             className="bg-limegreen text-white px-4 py-2 rounded"
             onClick={handleSubmit}
-            >
+          >
             Submit
           </button>
-            {mood && (
-                  <button
-                    className="bg-limegreen text-white px-4 py-2 rounded"
-                    onClick={handleViewResults}
-                  >
-                    View Results
-                  </button>
-                )}
+          {mood && (
+            <button
+              className="bg-limegreen text-white px-4 py-2 rounded"
+              onClick={handleViewResults}
+            >
+              View Results
+            </button>
+          )}
         </div>
       </div>
       <ToastContainer />
