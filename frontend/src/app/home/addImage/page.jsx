@@ -13,6 +13,7 @@ export default function AddImage() {
   const [selectedImage, setSelectedImage] = useState(null)
   const fileInputRef = useRef(null)
   const router = useRouter()
+  // const [predictedClasses, setPredictedClasses] = useState(null)
 
   const handleClickButton = () => {
     if (fileInputRef.current) {
@@ -41,6 +42,7 @@ export default function AddImage() {
     setSelectedImage(null)
     setBase64Image('')
     setMood(null) // Reset mood when canceling
+    setPredictedClasses(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = null // Clear the file input
     }
@@ -58,7 +60,7 @@ export default function AddImage() {
   const handleViewResults = () => {
     if (mood) {
       localStorage.setItem('myMood', JSON.stringify(mood))
-      localStorage.setItem('predictedClasses', JSON.stringify(predictedClasses))
+      localStorage.setItem('predictedClasses', JSON.stringify(mood))
       router.push('/home/results')
     } else {
       toast.error('Mood not predicted yet')
@@ -82,78 +84,42 @@ export default function AddImage() {
       })
 
       console.log(response.data)
-      // let tempMood = response.data.predicted_classes
-      if (tempMood.length > 0) {
-        const firstMood = tempMood[0]
-        let convertedMood
-
-        switch (firstMood) {
-          case 'angry':
-            convertedMood = 'marah'
-            break
-          case 'disgusted':
-            convertedMood = 'jijik'
-            break
-          case 'fearful':
-            convertedMood = 'takut'
-            break
-          case 'happy':
-            convertedMood = 'senang'
-            break
-          case 'neutral':
-            convertedMood = 'netral'
-            break
-          case 'sad':
-            convertedMood = 'sedih'
-            break
-          case 'surprised':
-            convertedMood = 'terkejut'
-            break
-          default:
-            convertedMood = 'netral'
-        }
-
-        console.log('Changed to', convertedMood)
-        setMood(convertedMood)
-        setPredictedClasses(tempMood)
-        setLoading(false)
-      } else {
-        console.log('Empty predicted mood array')
-      }
+      // let tempMood = response.data.top
+      // let tempPredictedClasses = response.data.predicted_classes[0]
       let tempMood = response.data.predicted_classes[0]
       if (tempMood === 'angry') {
         tempMood = 'marah'
+        console.log('Changed to', tempMood)
       } else if (tempMood === 'disgusted') {
         tempMood = 'jijik'
+        console.log('Changed to', tempMood)
       } else if (tempMood === 'fearful') {
         tempMood = 'takut'
+        console.log('Changed to', tempMood)
       } else if (tempMood === 'happy') {
         tempMood = 'senang'
+        console.log('Changed to', tempMood)
       } else if (tempMood === 'neutral') {
         tempMood = 'netral'
+        console.log('Changed to', tempMood)
       } else if (tempMood === 'sad') {
         tempMood = 'sedih'
+        console.log('Changed to', tempMood)
       } else if (tempMood === 'surprised') {
         tempMood = 'terkejut'
+        console.log('Changed to', tempMood)
       }
+      // setPredictedClasses(tempPredictedClasses)
+      // console.log('Predicted Classnya:', tempPredictedClasses[0])
       setMood(tempMood)
       setLoading(false)
-      console.log('Predicted Mood:', tempMood)
+      console.log('PREDICTED MOODNYA:', tempMood)
     } catch (error) {
       console.log(error.message)
       toast.error('Error uploading image: ' + error.message)
       setLoading(false)
     }
   }
-
-  // const handleViewResults = () => {
-  //   if (tempMoodmood) {
-  //     localStorage.setItem('myMood', JSON.stringify(tempMood))
-  //     router.push('/home/results')
-  //   } else {
-  //     toast.error('Mood not predicted yet')
-  //   }
-  // }
 
   return (
     <main className="flex h-auto min-h-screen flex-col items-center justify-between p-10 bg-green">
@@ -203,7 +169,7 @@ export default function AddImage() {
               <button
                 className="bg-limegreen text-white px-4 py-2 rounded"
                 onClick={handleSubmit}
-                disabled={loading} // Disable the button while loading
+                disabled={loading}
               >
                 {loading ? 'Loading...' : 'Predict Mood'}
               </button>
