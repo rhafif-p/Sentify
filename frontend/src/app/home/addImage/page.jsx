@@ -10,7 +10,6 @@ export default function AddImage() {
   const [base64Image, setBase64Image] = useState('')
   const [loading, setLoading] = useState(false)
   const [mood, setMood] = useState(null)
-  const [predictedClasses, setPredictedClasses] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const fileInputRef = useRef(null)
   const router = useRouter()
@@ -42,7 +41,6 @@ export default function AddImage() {
     setSelectedImage(null)
     setBase64Image('')
     setMood(null) // Reset mood when canceling
-    setPredictedClasses(null) // Reset predictedClasses when canceling
     if (fileInputRef.current) {
       fileInputRef.current.value = null // Clear the file input
     }
@@ -54,16 +52,6 @@ export default function AddImage() {
     } else {
       console.log('No photo uploaded')
       toast.error('Please upload an image first')
-    }
-  }
-
-  const handleViewResults = () => {
-    if (mood) {
-      localStorage.setItem('myMood', JSON.stringify(mood))
-      localStorage.setItem('predictedClasses', JSON.stringify(predictedClasses))
-      router.push('/results')
-    } else {
-      toast.error('Mood not predicted yet')
     }
   }
 
@@ -84,38 +72,38 @@ export default function AddImage() {
       })
 
       console.log(response.data)
-      let tempMood = response.data.top
-      const tempPredictedClasses = response.data.predicted_classes
+      let tempMood = response.data.predicted_classes[0]
       if (tempMood === 'angry') {
         tempMood = 'marah'
-        console.log('Changed to ', tempMood)
       } else if (tempMood === 'disgusted') {
         tempMood = 'jijik'
-        console.log('Changed to ', tempMood)
       } else if (tempMood === 'fearful') {
         tempMood = 'takut'
-        console.log('Changed to ', tempMood)
       } else if (tempMood === 'happy') {
         tempMood = 'senang'
-        console.log('Changed to ', tempMood)
       } else if (tempMood === 'neutral') {
         tempMood = 'netral'
-        console.log('Changed to ', tempMood)
       } else if (tempMood === 'sad') {
         tempMood = 'sedih'
-        console.log('Changed to ', tempMood)
       } else if (tempMood === 'surprised') {
         tempMood = 'terkejut'
-        console.log('Changed to ', tempMood)
       }
       setMood(tempMood)
-      setPredictedClasses(tempPredictedClasses)
       setLoading(false)
-      console.log('Predicted Classnya:', tempPredictedClasses[0])
+      console.log('Predicted Mood:', tempMood)
     } catch (error) {
       console.log(error.message)
       toast.error('Error uploading image: ' + error.message)
       setLoading(false)
+    }
+  }
+
+  const handleViewResults = () => {
+    if (tempMoodmood) {
+      localStorage.setItem('myMood', JSON.stringify(tempMood))
+      router.push('/home/results')
+    } else {
+      toast.error('Mood not predicted yet')
     }
   }
 
@@ -163,14 +151,15 @@ export default function AddImage() {
             >
               Cancel
             </button>
-            <button
-              className="bg-limegreen text-white px-4 py-2 rounded"
-              onClick={handleSubmit}
-              disabled={loading} // Disable the button while loading
-            >
-              {loading ? 'Loading...' : 'Predict Mood'}
-            </button>
-            {mood && (
+            {!mood ? (
+              <button
+                className="bg-limegreen text-white px-4 py-2 rounded"
+                onClick={handleSubmit}
+                disabled={loading} // Disable the button while loading
+              >
+                {loading ? 'Loading...' : 'Predict Mood'}
+              </button>
+            ) : (
               <button
                 className="bg-limegreen text-white px-4 py-2 rounded"
                 onClick={handleViewResults}
