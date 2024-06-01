@@ -90,23 +90,21 @@ export default function Result() {
     'novel',
     'children',
   ]
+
   useEffect(() => {
     const storedMood = localStorage.getItem('myMood')
-
     const parsedMood = storedMood ? JSON.parse(storedMood) : null
-
     setMood(parsedMood)
   }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       if (!mood) {
-        return // Return early if mood is not set
+        return
       }
 
       setIsLoading(true)
       try {
-        // Mapping of moods to subjects
         const moodSubjects = {
           marah: ['algebra', 'architecture'],
           jijik: ['magic', 'programming', 'health'],
@@ -122,15 +120,17 @@ export default function Result() {
         const random = Math.floor(Math.random() * seed)
         const selectedSubject =
           selectedSubjects[random % selectedSubjects.length]
-        console.log(selectedSubject)
+        console.log('Subjek yang digunakan adalah ' + selectedSubject)
 
-        const apiUrl = `https://openlibrary.org/search.json?subject=${selectedSubject}&has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median`
+        const apiUrl = `https://openlibrary.org/subjects/${selectedSubject}.json?has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median&limit=5`
         const response = await axios.get(apiUrl)
-        const sortedBooks = response.data.docs.sort(
-          (a, b) => b.ratings_sortable - a.ratings_sortable
-        )
+        // console.log(response.data.docs)
+        // const sortedBooks = response.data.works.sort(
+        //   (a, b) => b.ratings_sortable - a.ratings_sortable
+        // )
+        const sortedBooks = response.data.works
         console.log(sortedBooks)
-        setBooks(sortedBooks.slice(0, 10))
+        setBooks(sortedBooks.slice(0, 30))
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -138,7 +138,35 @@ export default function Result() {
     }
 
     fetchData()
-  }, [mood]) // Fetch data whenever mood changes
+  }, [mood])
+
+  // useEffect(() => {
+  //   const fetchBookDescription = async () => {
+  //     if (selectedBook) {  
+  //       try {
+  //         const isbn = selectedBook.isbn[0]
+  //         const response = await axios.get(
+  //           `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=details&format=json`
+  //         )
+  //         const bookDetails = response.data[`ISBN:${isbn}`].details
+  //         setBookDescription(
+  //           bookDetails.description
+  //             ? bookDetails.description.value
+  //             : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut eros in libero consequat ultrices. Aliquam erat volutpat. Mauris nec sapien nulla. Quisque auctor malesuada risus, vel tempus felis eleifend a. Nullam accumsan, eros vel cursus venenatis, leo odio rutrum felis, et volutpat tortor diam nec nibh. Vivamus vehicula, magna non feugiat tincidunt, risus ligula ullamcorper elit, eu efficitur est dui in velit. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi pretium mauris sed odio interdum ultrices. Sed sit amet felis sed ex sodales tempus. Vivamus vel eros in libero sollicitudin rhoncus sit amet vitae turpis. Proin sit amet sapien non .'
+  //         )
+
+  //         // Scroll back to the detailed content column
+  //         window.scrollTo({
+  //           top: document.getElementById('detailed-content').offsetTop,
+  //           behavior: 'smooth',
+  //         })
+  //       } catch (error) {
+  //         console.error('Error fetching book description:', error)
+  //       }
+  //     }
+  //   }
+  //   fetchBookDescription()
+  // }, [selectedBook])
 
   useEffect(() => {
     const fetchBookDescription = async () => {
@@ -146,7 +174,7 @@ export default function Result() {
         try {
           const isbn = selectedBook.isbn[0]
           const response = await axios.get(
-            `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=details&format=json`
+            `https://openlibrary.org/${book_number}.json`
           )
           const bookDetails = response.data[`ISBN:${isbn}`].details
           setBookDescription(
@@ -171,7 +199,7 @@ export default function Result() {
   return (
     <>
       {isLoading ? (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-200 z-50">
           <div className="text-center">
             <div role="status">
               <div
@@ -184,16 +212,16 @@ export default function Result() {
               >
                 <div
                   style={{
-                    border: '16px solid #f3f3f3',
-                    borderTop: '16px solid #3498db',
+                    border: '8px solid #f3f3f3',
+                    borderTop: '8px solid #3498db',
                     borderRadius: '50%',
-                    width: '120px',
-                    height: '120px',
-                    animation: 'spin 2s linear infinite',
+                    width: '60px',
+                    height: '60px',
+                    animation: 'spin 1s linear infinite',
                   }}
                 />
               </div>
-              <p className="text-blue">Loading... </p>
+              <p className="text-blue-500 text-lg font-bold mt-4">Loading...</p>
             </div>
             <style>
               {`
@@ -211,18 +239,19 @@ export default function Result() {
             className="bg-white h-sdvh w-full flex flex-col items-center rounded-xl mx-8"
             style={{ boxShadow: '7px 8px 17px 0px #00000040' }}
           >
-            <p className="font-bold text-6xl text-darkgray font-poppins text-center w-3/6 pt-10 pb-16 leading-tight mt-8">
+            <p className="font-bold text-6xl text-gray-800 font-poppins text-center w-3/6 pt-10 pb-16 leading-tight mt-8">
               BERIKUT INI JUDUL BUKU REKOMENDASI KAMI
             </p>
 
-            <p className="w-2/3 font-inter text-lg text-lightgray font-semibold text-center px-2 pb-8">
-              Anda dapat melakukan pratinjau dengan memilih salah satu judul
-              buku
+            <p className="w-2/3 font-inter text-lg text-gray-500 font-semibold text-center px-2 pb-8">
+              Kami mendeteksi bahwa anda merasa {mood} sekarang, kami rekomen
+              buat baca ini
             </p>
 
             <div className="flex h-full w-3/4 columns-2 py-10 gap-10">
               <div className="flex-1">
                 {/* Scrollable column */}
+                {/* {console.log(books)} */}
                 {books.map((book) => (
                   <div
                     key={book.title}
@@ -231,17 +260,24 @@ export default function Result() {
                   >
                     <div>
                       <img
-                        src={`https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`}
+                        src={`https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg`}
                         alt={book.title}
                         className="w-24 rounded-lg"
                       />
                     </div>
                     <div>
-                      <p className="text-xl font-bold text-darkgray">
+                      <p className="text-xl font-bold text-gray-800">
                         {book.title}
                       </p>
                       <p className="text-gray-600">
-                        {book.author_name.slice(0, 3).join(', ')}
+                        {/* {book.authors.slice(0, 3).join(', ')} */}
+                        {(function () {
+                          const authorNames = []
+                          for (const author of book.authors) {
+                            authorNames.push(author.name)
+                          }
+                          return authorNames.join(', ')
+                        })()}
                       </p>
                     </div>
                   </div>
@@ -250,13 +286,14 @@ export default function Result() {
 
               <div className="flex-1" id="detailed-content">
                 {/* Detailed content column */}
+                {console.log(selectedBook)}
                 {selectedBook && (
                   <div className="p-4 flex flex-col gap-4">
-                    <p className="text-5xl font-bold text-darkgray">
+                    <p className="text-5xl font-bold text-gray-800">
                       {selectedBook.title}
                     </p>
                     <img
-                      src={`https://covers.openlibrary.org/b/id/${selectedBook.cover_i}-L.jpg`}
+                      src={`https://covers.openlibrary.org/b/id/${selectedBook.cover_id}-L.jpg`}
                       className="rounded-lg w-1/2 drop-shadow-md"
                     />
                     <p className="text-gray-600">
@@ -265,17 +302,23 @@ export default function Result() {
                     </p>
                     <p className="text-gray-600">
                       <span className="font-bold">Penulis:</span>{' '}
-                      {selectedBook.author_name.join(', ')}
+                      {(function () {
+                        const authorNames = []
+                        for (const author of selectedBook.authors) {
+                          authorNames.push(author.name)
+                        }
+                        return authorNames.join(', ')
+                      })()}
                     </p>
                     <p className="text-gray-600">
                       <span className="font-bold">
-                        Tahun Publikasi Terakhir:
+                        Tahun Publikasi Pertama:
                       </span>{' '}
-                      {Math.max(...selectedBook.publish_year)}
+                      {selectedBook.first_publish_year}
                     </p>
                     <p className="text-gray-600">
-                      <span className="font-bold">Jumlah Halaman:</span>{' '}
-                      {selectedBook.number_of_pages_median}
+                      <span className="font-bold">Edisi Terakhir:</span>{' '}
+                      {selectedBook.edition_count}
                     </p>
                     <p className="text-gray-600">
                       <span className="font-bold">Genre:</span>{' '}
@@ -285,10 +328,10 @@ export default function Result() {
                         )
                         .join(', ')}
                     </p>
-                    <p className="text-gray-600">
+                    {/* <p className="text-gray-600">
                       <span className="font-bold">Rating:</span>{' '}
                       {selectedBook.ratings_average}
-                    </p>
+                    </p> */}
                   </div>
                 )}
               </div>
