@@ -19,7 +19,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex h-screen min-h-screen flex-col items-center justify-between p-4 md:p-10 bg-green">
+    <main className="flex h-auto min-h-svh flex-col items-center justify-between p-4 md:p-10 bg-green">
       <div
         className="bg-white h-full w-full flex flex-col items-center rounded-xl mx-4 md:mx-8"
         style={{ boxShadow: '7px 8px 17px 0px #00000040' }}
@@ -78,7 +78,7 @@ export default function Home() {
           </div>
         </div>
         <p
-          className="text-center font-bold text-md text-lightgray underline underline-offset-4 hover:underline-offset-8 cursor-pointer	"
+          className="text-center font-bold text-md text-lightgray underline underline-offset-4 hover:underline-offset-8 cursor-pointer pb-10	"
           onClick={handleExplorePage}
         >
           Explore Daftar Buku
