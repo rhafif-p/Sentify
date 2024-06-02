@@ -140,7 +140,7 @@ export default function Result() {
 
   // useEffect(() => {
   //   const fetchBookDescription = async () => {
-  //     if (selectedBook) {  
+  //     if (selectedBook) {
   //       try {
   //         const isbn = selectedBook.isbn[0]
   //         const response = await axios.get(
@@ -248,7 +248,6 @@ export default function Result() {
 
             <div className="flex h-full w-3/4 columns-2 py-10 gap-10">
               <div className="flex-1">
-
                 {books.map((book) => (
                   <div
                     key={book.title}

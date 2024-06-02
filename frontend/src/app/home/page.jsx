@@ -13,7 +13,7 @@ export default function Home() {
     window.location.href = '/home/questionMark'
   }
 
-  const handleExplorePage = (event) =>{
+  const handleExplorePage = (event) => {
     event.preventDefault()
     window.location.href = '/home/explore'
   }
@@ -77,7 +77,12 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <p className='text-center font-bold text-md text-lightgray underline underline-offset-4 hover:underline-offset-8 cursor-pointer	' onClick={handleExplorePage}>Explore Daftar Buku</p>
+        <p
+          className="text-center font-bold text-md text-lightgray underline underline-offset-4 hover:underline-offset-8 cursor-pointer	"
+          onClick={handleExplorePage}
+        >
+          Explore Daftar Buku
+        </p>
       </div>
     </main>
   )
