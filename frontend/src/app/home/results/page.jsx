@@ -120,7 +120,6 @@ export default function Result() {
         const random = Math.floor(Math.random() * seed)
         const selectedSubject =
           selectedSubjects[random % selectedSubjects.length]
-        console.log('Subjek yang digunakan adalah ' + selectedSubject)
 
         const apiUrl = `https://openlibrary.org/subjects/${selectedSubject}.json?has_cover=true&fields=title,author_name,publish_year,subject,subject_key,ratings_average,ratings_sortable,cover_i,key,isbn,number_of_pages_median&limit=5`
         const response = await axios.get(apiUrl)
@@ -129,7 +128,6 @@ export default function Result() {
         //   (a, b) => b.ratings_sortable - a.ratings_sortable
         // )
         const sortedBooks = response.data.works
-        console.log(sortedBooks)
         setBooks(sortedBooks.slice(0, 30))
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -250,8 +248,7 @@ export default function Result() {
 
             <div className="flex h-full w-3/4 columns-2 py-10 gap-10">
               <div className="flex-1">
-                {/* Scrollable column */}
-                {/* {console.log(books)} */}
+
                 {books.map((book) => (
                   <div
                     key={book.title}
