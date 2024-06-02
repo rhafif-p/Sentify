@@ -77,8 +77,20 @@ export default function AddImage() {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
+      console.log('response:', response.data)
 
-      let tempMood = response.data.predicted_classes[0]
+      // Extract highest predictions
+      const predictions = response.data.predictions
+      let highestConfidence = 0
+      let bestMood = null
+
+      for (const [mood, prediction] of Object.entries(predictions)) {
+        if (prediction.confidence > highestConfidence) {
+          highestConfidence = prediction.confidence
+          bestMood = mood
+        }
+      }
+
       const moodMapping = {
         angry: 'marah',
         disgusted: 'jijik',
@@ -88,10 +100,9 @@ export default function AddImage() {
         sad: 'sedih',
         surprised: 'terkejut',
       }
-      tempMood = moodMapping[tempMood] || tempMood
-
-      setMood(tempMood)
-      console.log('MOODNYA:' + tempMood)
+      const translatedMood = moodMapping[bestMood] || bestMood
+      setMood(translatedMood)
+      console.log('MOODNYA:', translatedMood)
       setLoading(false)
     } catch (error) {
       toast.error('Error uploading image: ' + error.message)
@@ -100,7 +111,7 @@ export default function AddImage() {
   }
 
   return (
-    <main className="flex h-screen min-h-screen flex-col items-center justify-between p-4 md:p-10 bg-green">
+    <main className="flex h-auto min-h-svh flex-col items-center justify-between p-4 md:p-10 bg-green">
       <div
         className="bg-white h-full w-full flex flex-col items-center rounded-xl mx-4 md:mx-8"
         style={{ boxShadow: '7px 8px 17px 0px #00000040' }}
@@ -136,7 +147,7 @@ export default function AddImage() {
         </div>
 
         {selectedImage && (
-          <div className="flex flex-col md:flex-row items-center mt-4 space-x-0 md:space-x-4 space-y-4 md:space-y-0">
+          <div className="flex flex-col md:flex-row items-center mt-4 mb-4 space-x-0 md:space-x-4 space-y-4 md:space-y-0">
             <button
               className="border border-limegreen text-limegreen px-4 py-2 rounded transition transform active:scale-95"
               onClick={handleCancel}
