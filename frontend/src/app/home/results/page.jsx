@@ -286,7 +286,6 @@ export default function Result() {
 
               <div className="flex-1" id="detailed-content">
                 {/* Detailed content column */}
-                {console.log(selectedBook)}
                 {selectedBook && (
                   <div className="p-4 flex flex-col gap-4">
                     <p className="text-5xl font-bold text-gray-800">
